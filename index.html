@@ -3,152 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralHost | Extreme Edge Deployment</title>
+    <title>ViralHost | Global Edge Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap');
-        
-        :root {
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.5);
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #020617; 
-            color: #fff; 
-            overflow-x: hidden;
-        }
-
-        /* Animated Aurora Background */
-        .aurora {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, #1e293b 0%, transparent 40%);
-            z-index: -1;
-            filter: blur(80px);
-            opacity: 0.6;
-        }
-
-        .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #fff 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .deploy-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 30px var(--accent-glow);
-            transform: translateY(-5px);
-        }
-
-        #viewer-frame { width: 100%; height: 100vh; border: none; background: white; }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        .float-anim { animation: float 4s ease-in-out infinite; }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        :root { --bg: #020617; --accent: #3b82f6; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #f8fafc; margin: 0; overflow-x: hidden; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        #loading-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #10b981); z-index: 99999; transition: width 0.4s ease; width: 0%; }
+        .sidebar { width: 280px; background: #0b0f1a; border-right: 1px solid #1e293b; height: 100vh; position: fixed; left: -280px; top: 0; z-index: 9999; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar.active { transform: translateX(280px); }
+        .page-view { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        iframe { width: 100%; height: 100vh; border: none; background: white; }
     </style>
 </head>
 <body>
 
-    <div class="aurora"></div>
+    <div id="loading-bar"></div>
 
-    <div id="viewer-container" class="hidden fixed inset-0 z-[9999] bg-white">
-        <div class="fixed top-6 left-1/2 -translate-x-1/2 z-[10000] flex gap-2 glass p-2 rounded-full border border-black/10">
-            <div class="flex items-center px-4 py-1 text-black font-bold text-xs border-r border-black/10">
-                <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                ViralHost Live
-            </div>
-            <button onclick="copyCurrentLink()" class="bg-blue-600 text-white px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-blue-500">Copy URL</button>
-            <button onclick="location.href=window.location.pathname" class="bg-black text-white px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest">Close</button>
+    <div id="viewer" class="hidden fixed inset-0 z-[10000] bg-white">
+        <div class="fixed top-6 left-6 z-[10001]">
+            <button onclick="location.href=window.location.pathname" class="bg-black text-white px-6 py-3 rounded-full font-bold text-xs shadow-2xl flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> BACK TO DASHBOARD
+            </button>
         </div>
-        <div id="render-target"></div>
+        <div id="render-target" class="h-full w-full"></div>
     </div>
 
-    <div id="app-shell" class="min-h-screen">
-        
-        <nav class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto" data-aos="fade-down">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/40 rotate-12">
-                    <i class="fa-solid fa-bolt-lightning text-white text-lg"></i>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tighter">Viral<span class="text-blue-500">Host</span></span>
+    <div id="app-shell">
+        <aside id="sidebar" class="sidebar p-8 flex flex-col">
+            <div class="font-extrabold text-xl mb-12 italic">VIRAL<span class="text-blue-500">HOST</span></div>
+            <nav class="space-y-4 flex-grow">
+                <button onclick="navigate('dashboard')" class="w-full flex items-center gap-4 text-sm p-4 rounded-2xl bg-blue-500/10 text-blue-400 font-bold" id="nav-dashboard"><i class="fa-solid fa-house"></i> Dashboard</button>
+                <button onclick="navigate('analytics')" class="w-full flex items-center gap-4 text-sm p-4 rounded-2xl text-gray-400" id="nav-analytics"><i class="fa-solid fa-chart-line"></i> Analytics</button>
+                <button onclick="navigate('settings')" class="w-full flex items-center gap-4 text-sm p-4 rounded-2xl text-gray-400" id="nav-settings"><i class="fa-solid fa-gear"></i> Settings</button>
+            </nav>
+            <div class="pt-6 border-t border-white/5">
+                <button onclick="logout()" class="w-full bg-red-500/10 text-red-500 py-4 rounded-2xl text-xs font-bold">SIGNOUT</button>
             </div>
-            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
-                <a href="#" class="hover:text-white transition">Deployments</a>
-                <a href="#" class="hover:text-white transition">Analytics</a>
-                <a href="#" class="hover:text-white transition">Documentation</a>
-            </div>
-            <button class="bg-white text-black px-6 py-2.5 rounded-full text-sm font-bold hover:bg-gray-200 transition">Get Started</button>
-        </nav>
+        </aside>
 
-        <main class="max-w-6xl mx-auto px-6 pt-12 pb-24">
-            
-            <div class="text-center mb-20" data-aos="zoom-out">
-                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter mb-6 gradient-text">Ship in seconds.</h1>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">Upload your HTML assets and host them instantly on the ViralHost global edge network.</p>
-            </div>
+        <section id="page-home" class="page-view">
+            <nav class="flex justify-between items-center px-6 md:px-12 py-8 glass sticky top-0 z-50">
+                <div class="font-extrabold text-2xl italic">VIRAL<span class="text-blue-500">HOST</span></div>
+                <button onclick="navigate('dashboard')" class="bg-blue-600 px-8 py-3 rounded-full text-xs font-bold shadow-lg">Console Access</button>
+            </nav>
+            <header class="max-w-6xl mx-auto px-6 py-32 text-center">
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-tight">Unlimited Deploys.<br><span class="text-blue-500">Zero Cost.</span></h1>
+                <p class="text-gray-400 text-xl max-w-2xl mx-auto mb-12">The world's most generous edge hosting platform. Launch unlimited sites for free on our global network.</p>
+                <button onclick="navigate('dashboard')" class="bg-white text-black px-12 py-5 rounded-2xl font-bold shadow-2xl">Create Free Project</button>
+            </header>
+        </section>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                
-                <div class="lg:col-span-5" data-aos="fade-right">
-                    <div class="glass p-8 rounded-[2.5rem] sticky top-10">
-                        <h2 class="text-xl font-bold mb-8 flex items-center gap-3">
-                            <i class="fa-solid fa-circle-plus text-blue-500"></i> New Project
-                        </h2>
-
-                        <div class="space-y-6">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] ml-1">Instance Name</label>
-                                <input type="text" id="pName" placeholder="my-app" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 mt-2 outline-none focus:border-blue-500 transition-all font-medium">
-                            </div>
-
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] ml-1">Asset Selection</label>
-                                <label class="mt-2 flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/10 rounded-3xl cursor-pointer hover:bg-white/5 transition-all group">
-                                    <input type="file" id="fInput" accept=".html" class="hidden">
-                                    <i class="fa-solid fa-file-export text-2xl text-gray-600 group-hover:text-blue-500 mb-3"></i>
-                                    <span id="fStatus" class="text-sm text-gray-500">Drop index.html here</span>
-                                </label>
-                            </div>
-
-                            <button onclick="deployNow()" id="dBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-900/30">
-                                <span>Deploy Instance</span>
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
+        <section id="page-dashboard" class="page-view hidden max-w-7xl mx-auto p-6 md:p-12">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-6">
+                    <button onclick="toggleSidebar()" class="w-14 h-14 glass rounded-2xl flex items-center justify-center text-blue-500 text-xl"><i class="fa-solid fa-bars-staggered"></i></button>
+                    <div>
+                        <h2 class="text-3xl font-black">Welcome, <span id="user-name-greet" class="text-blue-500">Developer</span></h2>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-black" id="user-email-sub"></p>
                     </div>
                 </div>
-
-                <div class="lg:col-span-7" data-aos="fade-left">
-                    <h3 class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-6 ml-2">Active Deployments</h3>
-                    <div id="pList" class="space-y-4">
-                        </div>
-                </div>
-
+                <button onclick="openDeploy()" class="bg-blue-600 px-8 py-4 rounded-2xl text-xs font-black shadow-xl shadow-blue-500/20">+ NEW PROJECT</button>
             </div>
-        </main>
+
+            <div class="glass p-8 rounded-[2.5rem] mb-12 border-l-4 border-blue-500 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-6">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg"><i class="fa-solid fa-infinity"></i></div>
+                    <div>
+                        <h4 class="font-black text-lg">Unlimited Free Deploys Active</h4>
+                        <p class="text-gray-400 text-sm">You currently have <span id="site-count" class="text-white font-bold">0</span> sites live. You can deploy as many as you need!</p>
+                    </div>
+                </div>
+                <button onclick="openDeploy()" class="bg-white/10 px-6 py-3 rounded-xl text-[10px] font-black hover:bg-white/20 transition uppercase tracking-widest">Deploy Another Website</button>
+            </div>
+            
+            <div id="project-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </section>
+
+        <section id="page-analytics" class="page-view hidden max-w-7xl mx-auto p-12">
+            <button onclick="navigate('dashboard')" class="mb-10 text-xs font-bold text-blue-400"><i class="fa-solid fa-arrow-left mr-2"></i> BACK TO DASHBOARD</button>
+            <h2 class="text-4xl font-black mb-12">Usage Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass p-12 rounded-[3rem]">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Account Status</p>
+                    <p class="text-2xl font-bold text-green-500">Verified Free Tier</p>
+                    <p class="text-sm text-gray-500 mt-2">All global edge nodes available.</p>
+                </div>
+                <div class="glass p-12 rounded-[3rem]">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Total Bandwidth</p>
+                    <p class="text-4xl font-black">Unlimited</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-settings" class="page-view hidden max-w-7xl mx-auto p-12">
+            <button onclick="navigate('dashboard')" class="mb-10 text-xs font-bold text-blue-400"><i class="fa-solid fa-arrow-left mr-2"></i> BACK TO DASHBOARD</button>
+            <h2 class="text-4xl font-black mb-12">Profile Settings</h2>
+            <div class="glass p-12 rounded-[3.5rem] max-w-2xl">
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block">Login Email</label>
+                        <p id="settings-email" class="text-xl font-bold mono bg-white/5 p-4 rounded-xl"></p>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block">Developer ID</label>
+                        <p id="settings-id" class="text-[10px] mono text-gray-500"></p>
+                    </div>
+                    <button onclick="logout()" class="w-full py-5 bg-red-500/10 text-red-500 rounded-2xl text-xs font-bold">DE-AUTHENTICATE</button>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <div id="modal-auth" class="hidden fixed inset-0 z-[10000] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-6">
+        <div class="glass w-full max-w-sm p-12 rounded-[3.5rem] text-center border-blue-500/20">
+            <h3 class="text-2xl font-black mb-8 italic">VIRAL<span class="text-blue-500">HOST</span></h3>
+            <div class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email" class="w-full bg-black/40 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500">
+                <input type="password" id="auth-pass" placeholder="Password" class="w-full bg-black/40 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 py-5 rounded-2xl font-black">ACCESS CONSOLE</button>
+                <button onclick="closeModals()" class="text-gray-500 text-[10px] font-black mt-4">DISMISS</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-deploy" class="hidden fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-6">
+        <div class="glass w-full max-w-md p-12 rounded-[3rem]">
+            <h3 class="text-xl font-bold mb-8">Deploy Unlimited</h3>
+            <div class="space-y-6">
+                <input type="text" id="slug" placeholder="slug-name" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl outline-none mono">
+                <label class="block border-2 border-dashed border-white/10 p-12 rounded-3xl text-center cursor-pointer">
+                    <input type="file" id="html-file" accept=".html" class="hidden">
+                    <p id="file-name" class="text-xs text-gray-500 font-bold uppercase">Click to Select index.html</p>
+                </label>
+                <button onclick="runDeploy()" id="deploy-btn" class="w-full bg-blue-600 py-5 rounded-2xl font-bold uppercase text-xs">Launch to production</button>
+                <button onclick="closeModals()" class="w-full text-gray-600 text-[10px] font-bold">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        AOS.init({ duration: 1000, once: true });
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBERQ3eUVKGr9azQD0DEomqr_5MY5fEGuU",
@@ -161,113 +161,145 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        let currentUser = JSON.parse(localStorage.getItem('vh_v13_session')) || null;
 
-        // --- GLOBAL ROUTER ---
-        async function viralRouter() {
-            const params = new URLSearchParams(window.location.search);
-            const siteName = params.get('site');
-
-            if (siteName) {
-                const q = query(collection(db, "viral_sites"), where("name", "==", siteName.toLowerCase()));
-                const snap = await getDocs(q);
-
-                if (!snap.empty) {
-                    const data = snap.docs[0].data();
-                    document.getElementById('app-shell').style.display = 'none';
-                    document.getElementById('viewer-container').classList.remove('hidden');
-                    
-                    const blob = new Blob([data.html], { type: 'text/html' });
-                    const url = URL.createObjectURL(blob);
-                    document.getElementById('render-target').innerHTML = `<iframe src="${url}" id="viewer-frame"></iframe>`;
-                }
+        // SPA ROUTER WITH LOADING SPAN
+        window.navigate = (pageId) => {
+            if((pageId === 'dashboard' || pageId === 'analytics' || pageId === 'settings') && !currentUser) {
+                document.getElementById('modal-auth').classList.remove('hidden');
+                return;
             }
-        }
-        viralRouter();
 
-        // --- DEPLOYMENT ENGINE ---
-        let fileContent = "";
-        const fInput = document.getElementById('fInput');
-        const fStatus = document.getElementById('fStatus');
-
-        fInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                fStatus.innerText = file.name;
-                const reader = new FileReader();
-                reader.onload = (ev) => { fileContent = ev.target.result; };
-                reader.readAsText(file);
-            }
-        });
-
-        window.deployNow = async () => {
-            const name = document.getElementById('pName').value.toLowerCase().trim();
-            const btn = document.getElementById('dBtn');
-
-            if (!name || !fileContent) return alert("Please fill project name and upload HTML.");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Deploying...';
-
-            try {
-                const q = query(collection(db, "viral_sites"), where("name", "==", name));
-                const snap = await getDocs(q);
-                if (!snap.empty) throw new Error("Name already taken!");
-
-                await addDoc(collection(db, "viral_sites"), {
-                    name: name,
-                    html: fileContent,
-                    date: new Date()
+            const loader = document.getElementById('loading-bar');
+            loader.style.width = '40%';
+            
+            setTimeout(() => {
+                loader.style.width = '100%';
+                document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
+                document.getElementById(`page-${pageId}`).classList.remove('hidden');
+                document.getElementById('sidebar').classList.remove('active');
+                
+                // Active Nav Styling
+                ['dashboard', 'analytics', 'settings'].forEach(nav => {
+                    const el = document.getElementById(`nav-${nav}`);
+                    if(el) el.className = (nav === pageId) 
+                        ? "w-full flex items-center gap-4 text-sm p-4 rounded-2xl bg-blue-500/10 text-blue-400 font-bold"
+                        : "w-full flex items-center gap-4 text-sm p-4 rounded-2xl text-gray-400";
                 });
 
-                alert("Deployed to viral-host.onrender.com!");
-                location.reload();
-            } catch (err) {
-                alert(err.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Deploy Instance";
-            }
+                setTimeout(() => loader.style.width = '0%', 400);
+            }, 200);
         };
 
-        // --- REALTIME FEED ---
-        const qL = query(collection(db, "viral_sites"), orderBy("date", "desc"));
-        onSnapshot(qL, (snap) => {
-            const list = document.getElementById('pList');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const s = doc.data();
-                const url = `https://viral-host.onrender.com?site=${s.name}`;
-                list.innerHTML += `
-                    <div class="glass p-6 rounded-3xl flex items-center justify-between deploy-card transition-all duration-300">
-                        <div class="flex items-center gap-5">
-                            <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-500 font-bold">
-                                ${s.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg leading-tight">viral-host.onrender.com/${s.name}</h4>
-                                <div class="flex items-center gap-2 text-[10px] text-gray-500 mt-1 font-bold uppercase tracking-widest">
-                                    <span class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></span>
-                                    Healthy • Cloud Edge
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="window.open('${url}', '_blank')" class="w-10 h-10 bg-white/5 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-all">
-                                <i class="fa-solid fa-external-link text-xs"></i>
-                            </button>
-                            <button onclick="navigator.clipboard.writeText('${url}'); alert('Link Copied!')" class="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-all">
-                                <i class="fa-solid fa-link text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('active');
+        window.openDeploy = () => document.getElementById('modal-deploy').classList.remove('hidden');
+        window.closeModals = () => {
+            document.getElementById('modal-auth').classList.add('hidden');
+            document.getElementById('modal-deploy').classList.add('hidden');
+        };
+
+        window.handleAuth = async () => {
+            const email = document.getElementById('auth-email').value.trim().toLowerCase();
+            const pass = document.getElementById('auth-pass').value.trim();
+            if(!email || !pass) return;
+
+            const q = query(collection(db, "v13_users"), where("email", "==", email));
+            const snap = await getDocs(q);
+            let userObj;
+
+            if(snap.empty) {
+                userObj = { email, pass, userId: 'VH-' + Math.random().toString(36).substr(2, 9).toUpperCase() };
+                await addDoc(collection(db, "v13_users"), userObj);
+            } else {
+                userObj = snap.docs[0].data();
+                if(userObj.pass !== pass) return alert("Wrong credentials");
+            }
+            localStorage.setItem('vh_v13_session', JSON.stringify(userObj));
+            location.reload();
+        };
+
+        window.logout = () => { localStorage.removeItem('vh_v13_session'); location.reload(); };
+
+        let htmlSource = "";
+        document.getElementById('html-file').addEventListener('change', (e) => {
+            const r = new FileReader();
+            r.onload = (ev) => htmlSource = ev.target.result;
+            r.readAsText(e.target.files[0]);
+            document.getElementById('file-name').innerText = e.target.files[0].name;
         });
 
-        window.copyCurrentLink = () => {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Sharable URL copied!");
+        window.runDeploy = async () => {
+            const slug = document.getElementById('slug').value.toLowerCase().trim();
+            if(!slug || !htmlSource) return;
+            const btn = document.getElementById('deploy-btn');
+            btn.disabled = true; btn.innerText = "Deploying...";
+            try {
+                const check = await getDocs(query(collection(db, "v13_deploys"), where("slug", "==", slug)));
+                if(!check.empty) throw new Error("Slug taken");
+                await addDoc(collection(db, "v13_deploys"), {
+                    slug, html: htmlSource, owner: currentUser.email, createdAt: serverTimestamp()
+                });
+                closeModals();
+                btn.disabled = false; btn.innerText = "Launch";
+            } catch (e) { alert(e.message); btn.disabled = false; }
         };
+
+        function initApp() {
+            if(!currentUser) return;
+            
+            // Personalization
+            const username = currentUser.email.split('@')[0];
+            document.getElementById('user-name-greet').innerText = username.charAt(0).toUpperCase() + username.slice(1);
+            document.getElementById('user-email-sub').innerText = currentUser.email;
+            document.getElementById('settings-email').innerText = currentUser.email;
+            document.getElementById('settings-id').innerText = currentUser.userId || "VH-LEGACY-USER";
+
+            // Dashboard Sync
+            const q = query(collection(db, "v13_deploys"), where("owner", "==", currentUser.email));
+            onSnapshot(q, (snap) => {
+                document.getElementById('site-count').innerText = snap.size;
+                const grid = document.getElementById('project-grid');
+                grid.innerHTML = "";
+                snap.forEach(d => {
+                    const s = d.data();
+                    const url = `${window.location.origin}${window.location.pathname}?site=${s.slug}`;
+                    grid.innerHTML += `
+                        <div class="glass p-8 rounded-[2.5rem] border border-white/5 hover:border-blue-500/50 transition-all">
+                            <div class="flex justify-between items-start mb-10">
+                                <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500"><i class="fa-solid fa-server"></i></div>
+                                <span class="text-[9px] font-black bg-green-500/10 text-green-500 px-3 py-1 rounded-full uppercase">Global Node</span>
+                            </div>
+                            <h3 class="font-bold text-xl mono mb-1 tracking-tighter">/${s.slug}</h3>
+                            <div class="flex gap-2 mt-10">
+                                <a href="${url}" target="_blank" class="flex-grow bg-white/5 py-4 rounded-xl text-[10px] font-black text-center hover:bg-white/10 tracking-widest">LIVE SITE</a>
+                                <button onclick="deleteSite('${d.id}')" class="bg-red-500/10 text-red-500 px-5 rounded-xl hover:bg-red-500 transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        window.deleteSite = async (id) => { if(confirm("Shut down node?")) await deleteDoc(doc(db, "v13_deploys", id)); };
+
+        async function checkRoute() {
+            const p = new URLSearchParams(window.location.search);
+            const site = p.get('site');
+            if(site) {
+                const q = query(collection(db, "v13_deploys"), where("slug", "==", site.toLowerCase()));
+                const snap = await getDocs(q);
+                if(!snap.empty) {
+                    const d = snap.docs[0].data();
+                    document.getElementById('viewer').classList.remove('hidden');
+                    document.getElementById('app-shell').classList.add('hidden');
+                    document.getElementById('render-target').innerHTML = `<iframe src="${URL.createObjectURL(new Blob([d.html], {type:'text/html'}))}"></iframe>`;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        checkRoute().then(v => { if(!v) initApp(); });
     </script>
 </body>
 </html>
